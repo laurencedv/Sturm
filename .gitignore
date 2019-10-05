@@ -1,0 +1,180 @@
+# Generic
+*workspace*/
+*nogit*/
+*-nogit
+*.backup
+*.bak
+*.tmp
+*.fuse_*
+*~
+
+
+# ----------------------- Operating System ----------------------- #
+
+# Linux
+.Trash-*
+
+# Windows
+$RECYCLE.BIN/
+Thumbs.db
+Desktop.ini
+*.exe
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# OS X
+._*
+.DS_Store
+.AppleDouble
+.LSOverride
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.AppleDB
+.AppleDesktop
+.apdisk
+
+# --------------------------- Software --------------------------- #
+
+# Altium
+Status Report.txt
+*.$$$
+*.apr
+*.DRR
+*.EXTREP
+*.LDP
+*.REP
+*.RUL
+*.APR_LIB
+#/*/*.html
+#/*/*.htm
+History/
+__Previews/
+Project Logs*/
+paa.properties
+odb/
+
+# KiCAD
+_autosave_*
+_autosave-*
+_saved_*
+*.000
+*.bak
+*.bck
+*.kicad_pcb-bak
+
+# Elsie
+ElsieConfiguration.CFG
+Data*.DEL
+Data*.PHS
+Data*.S11
+Data*.S21
+Data*.SWR
+Data*.ZAN
+Data*.ZIN
+
+# Tina
+*autosave*.tsc
+
+# Pycharm
+.idea*
+
+# Eclipse & derivative
+#*.cproject
+#*.project
+#*.pp
+*.obj
+*.opt
+*.out
+*.mk
+Debug*/
+.settings/
+.metadata/
+.launches/
+dvt/
+RemoteSystemsTempFiles/
+
+# CodeComposer Studio 6
+optimizerAssistant/
+*.ccsproject
+
+# Common compilers
+*.o
+*.d
+
+# Meld
+*.orig
+*.remote
+*.backup
+*.local
+
+# Sublime text
+*.sublime-*
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+sftp-config.json
+
+# Office & libreoffice
+*~$*
+.~lock.*#
+
+# Simplicity Studio / Eclipse output compiled folder
+GNU\ ARM\ v*.*/
+
+# --------------------------- Language --------------------------- #
+
+# Python
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.python-version
+env/
+venv/
+ENV/
+build/
+local_settings.py
+target/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# C
+*.o
+*.ko
+*.obj
+*.elf
+*.lib
+*.a
+*.la
+*.lo
+*.dll
+*.so
+*.so.*
+*.dylib
+*.out
+*.app
+*.hex
+
+# Jekyll
+_site/
+.sass-cache/
+.jekyll-metadata
+
+
+
+hw/fp-info-cache
+
+*.sch-bak

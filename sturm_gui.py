@@ -10,6 +10,7 @@
 import wx
 import wx.xrc
 import wx.aui
+import wx.propgrid as pg
 
 ###########################################################################
 ## Class main_frame
@@ -146,7 +147,7 @@ class main_frame ( wx.Frame ):
 class frame_opedit ( wx.Frame ):
 
     def __init__( self, parent ):
-        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 800,600 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 797,600 ), style = wx.DEFAULT_FRAME_STYLE|wx.RESIZE_BORDER|wx.FULL_REPAINT_ON_RESIZE|wx.TAB_TRAVERSAL )
 
         self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
@@ -182,7 +183,7 @@ class frame_opedit ( wx.Frame ):
 
         opedit_grid.Add( box_nodes, wx.GBPosition( 1, 0 ), wx.GBSpan( 6, 2 ), wx.EXPAND, 0 )
 
-        box_options = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Options" ), wx.VERTICAL )
+        box_options = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Options" ), wx.HORIZONTAL )
 
         self.m_staticText1 = wx.StaticText( box_options.GetStaticBox(), wx.ID_ANY, u"OPTIONS!!!!", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText1.Wrap( -1 )
@@ -194,10 +195,22 @@ class frame_opedit ( wx.Frame ):
 
         box_link = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Links" ), wx.VERTICAL )
 
-        self.m_staticText2 = wx.StaticText( box_link.GetStaticBox(), wx.ID_ANY, u"links", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_staticText2.Wrap( -1 )
+        grid_link = wx.GridBagSizer( 0, 0 )
+        grid_link.SetFlexibleDirection( wx.BOTH )
+        grid_link.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 
-        box_link.Add( self.m_staticText2, 0, wx.ALL, 5 )
+        self.btn_link_add = wx.Button( box_link.GetStaticBox(), wx.ID_ANY, u"+", wx.DefaultPosition, wx.DefaultSize, wx.BU_EXACTFIT )
+        grid_link.Add( self.btn_link_add, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALL, 3 )
+
+        self.btn_link_rem = wx.Button( box_link.GetStaticBox(), wx.ID_ANY, u"-", wx.DefaultPosition, wx.DefaultSize, wx.BU_EXACTFIT )
+        grid_link.Add( self.btn_link_rem, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.ALL, 3 )
+
+        list_linkChoices = [ u"linkA" ]
+        self.list_link = wx.ListBox( box_link.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, list_linkChoices, wx.LB_SINGLE|wx.LB_SORT )
+        grid_link.Add( self.list_link, wx.GBPosition( 1, 0 ), wx.GBSpan( 8, 2 ), wx.ALL|wx.EXPAND, 3 )
+
+
+        box_link.Add( grid_link, 1, wx.EXPAND, 5 )
 
 
         opedit_grid.Add( box_link, wx.GBPosition( 5, 2 ), wx.GBSpan( 2, 2 ), wx.EXPAND, 0 )
@@ -212,7 +225,21 @@ class frame_opedit ( wx.Frame ):
 
         opedit_grid.Add( box_support, wx.GBPosition( 5, 4 ), wx.GBSpan( 2, 2 ), wx.EXPAND, 0 )
 
-        box_var = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Variables" ), wx.VERTICAL )
+        box_var = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Variables" ), wx.HORIZONTAL )
+
+        grid_var = wx.FlexGridSizer( 2, 1, 0, 0 )
+        grid_var.SetFlexibleDirection( wx.BOTH )
+        grid_var.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+
+        self.m_treeCtrl1 = wx.TreeCtrl( box_var.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.Size( 200,200 ), wx.TR_DEFAULT_STYLE|wx.TR_EDIT_LABELS|wx.TR_HAS_BUTTONS|wx.TR_HAS_VARIABLE_ROW_HEIGHT )
+        grid_var.Add( self.m_treeCtrl1, 0, wx.ALL, 5 )
+
+        self.propertyGridManager_var = pg.PropertyGridManager(box_var.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.Size( 200,200 ), wx.propgrid.PGMAN_DEFAULT_STYLE|wx.propgrid.PG_ALPHABETIC_MODE|wx.propgrid.PG_AUTO_SORT|wx.propgrid.PG_BOLD_MODIFIED|wx.PG_COMPACTOR|wx.propgrid.PG_DESCRIPTION|wx.FULL_REPAINT_ON_RESIZE)
+        self.propertyGridManager_var.SetExtraStyle( wx.propgrid.PG_EX_AUTO_UNSPECIFIED_VALUES|wx.propgrid.PG_EX_HELP_AS_TOOLTIPS|wx.propgrid.PG_EX_MODE_BUTTONS|wx.propgrid.PG_EX_MULTIPLE_SELECTION )
+        grid_var.Add( self.propertyGridManager_var, 0, wx.ALL, 5 )
+
+
+        box_var.Add( grid_var, 1, wx.EXPAND, 5 )
 
 
         opedit_grid.Add( box_var, wx.GBPosition( 1, 6 ), wx.GBSpan( 6, 3 ), wx.EXPAND, 0 )

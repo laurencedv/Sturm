@@ -9,6 +9,7 @@
 
 import wx
 import wx.xrc
+import wx.aui
 
 ###########################################################################
 ## Class main_frame
@@ -75,6 +76,18 @@ class main_frame ( wx.Frame ):
 
         self.SetMenuBar( self.m_menubar1 )
 
+        self.status_main = self.CreateStatusBar( 1, wx.STB_SIZEGRIP, wx.ID_ANY )
+        bSizer1 = wx.BoxSizer( wx.HORIZONTAL )
+
+        self.tab_main = wx.aui.AuiNotebook( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.aui.AUI_NB_CLOSE_ON_ACTIVE_TAB|wx.aui.AUI_NB_DEFAULT_STYLE|wx.aui.AUI_NB_MIDDLE_CLICK_CLOSE|wx.aui.AUI_NB_SCROLL_BUTTONS|wx.aui.AUI_NB_TAB_MOVE|wx.aui.AUI_NB_TAB_SPLIT )
+        self.m_panel1 = wx.Panel( self.tab_main, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+        self.tab_main.AddPage( self.m_panel1, u"opEdit", True, wx.Bitmap( u"media/opEdit-small.png", wx.BITMAP_TYPE_ANY ) )
+
+        bSizer1.Add( self.tab_main, 1, wx.EXPAND |wx.ALL, 1 )
+
+
+        self.SetSizer( bSizer1 )
+        self.Layout()
 
         self.Centre( wx.BOTH )
 
@@ -124,5 +137,93 @@ class main_frame ( wx.Frame ):
 
     def about_view_cb( self, event ):
         event.Skip()
+
+
+###########################################################################
+## Class frame_opedit
+###########################################################################
+
+class frame_opedit ( wx.Frame ):
+
+    def __init__( self, parent ):
+        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 800,600 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+
+        self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+        opedit_grid = wx.GridBagSizer( 3, 3 )
+        opedit_grid.SetFlexibleDirection( wx.BOTH )
+        opedit_grid.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_ALL )
+
+        self.file_path_picker = wx.FilePickerCtrl( self, wx.ID_ANY, u"./", u"Select a file", u"*.json", wx.DefaultPosition, wx.Size( 400,-1 ), wx.FLP_DEFAULT_STYLE|wx.FLP_OPEN|wx.FLP_SAVE|wx.FLP_USE_TEXTCTRL )
+        opedit_grid.Add( self.file_path_picker, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 7 ), wx.ALL|wx.EXPAND, 0 )
+
+        self.btn_save = wx.Button( self, wx.ID_SAVE, u"Save", wx.DefaultPosition, wx.DefaultSize, wx.BU_EXACTFIT )
+        opedit_grid.Add( self.btn_save, wx.GBPosition( 0, 7 ), wx.GBSpan( 1, 1 ), wx.ALL, 0 )
+
+        box_nodes = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Nodes" ), wx.VERTICAL )
+
+        grid_nodes = wx.GridBagSizer( 0, 0 )
+        grid_nodes.SetFlexibleDirection( wx.BOTH )
+        grid_nodes.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+
+        self.btn_node_add = wx.Button( box_nodes.GetStaticBox(), wx.ID_ANY, u"+", wx.DefaultPosition, wx.DefaultSize, wx.BU_EXACTFIT )
+        grid_nodes.Add( self.btn_node_add, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALL, 3 )
+
+        self.btn_node_rem = wx.Button( box_nodes.GetStaticBox(), wx.ID_ANY, u"-", wx.DefaultPosition, wx.DefaultSize, wx.BU_EXACTFIT )
+        grid_nodes.Add( self.btn_node_rem, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.ALL, 3 )
+
+        list_nodeChoices = [ u"Node1" ]
+        self.list_node = wx.ListBox( box_nodes.GetStaticBox(), wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, list_nodeChoices, wx.LB_SINGLE|wx.LB_SORT )
+        grid_nodes.Add( self.list_node, wx.GBPosition( 1, 0 ), wx.GBSpan( 8, 2 ), wx.ALL|wx.EXPAND, 3 )
+
+
+        box_nodes.Add( grid_nodes, 1, wx.EXPAND, 0 )
+
+
+        opedit_grid.Add( box_nodes, wx.GBPosition( 1, 0 ), wx.GBSpan( 6, 2 ), wx.EXPAND, 0 )
+
+        box_options = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Options" ), wx.VERTICAL )
+
+        self.m_staticText1 = wx.StaticText( box_options.GetStaticBox(), wx.ID_ANY, u"OPTIONS!!!!", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText1.Wrap( -1 )
+
+        box_options.Add( self.m_staticText1, 0, 0, 5 )
+
+
+        opedit_grid.Add( box_options, wx.GBPosition( 1, 2 ), wx.GBSpan( 4, 4 ), wx.EXPAND, 0 )
+
+        box_link = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Links" ), wx.VERTICAL )
+
+        self.m_staticText2 = wx.StaticText( box_link.GetStaticBox(), wx.ID_ANY, u"links", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText2.Wrap( -1 )
+
+        box_link.Add( self.m_staticText2, 0, wx.ALL, 5 )
+
+
+        opedit_grid.Add( box_link, wx.GBPosition( 5, 2 ), wx.GBSpan( 2, 2 ), wx.EXPAND, 0 )
+
+        box_support = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Support" ), wx.VERTICAL )
+
+        self.m_staticText3 = wx.StaticText( box_support.GetStaticBox(), wx.ID_ANY, u"Supports", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText3.Wrap( -1 )
+
+        box_support.Add( self.m_staticText3, 0, wx.ALL, 5 )
+
+
+        opedit_grid.Add( box_support, wx.GBPosition( 5, 4 ), wx.GBSpan( 2, 2 ), wx.EXPAND, 0 )
+
+        box_var = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Variables" ), wx.VERTICAL )
+
+
+        opedit_grid.Add( box_var, wx.GBPosition( 1, 6 ), wx.GBSpan( 6, 3 ), wx.EXPAND, 0 )
+
+
+        self.SetSizer( opedit_grid )
+        self.Layout()
+
+        self.Centre( wx.BOTH )
+
+    def __del__( self ):
+        pass
 
 

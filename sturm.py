@@ -1,8 +1,20 @@
 import abc
-import json
+
 import six
+import yaml
+
+_REGISTRY = {}
 
 
+class MetaRegistry(type):
+    def __new__(meta, name, bases, class_dict):
+        cls = type.__new__(meta, name, bases, class_dict)
+        if name not in _REGISTRY:
+            _REGISTRY[cls.__name__] = cls
+        return cls
+
+
+@six.add_metaclass(MetaRegistry)
 class BaseNodeRegistry(object):
     def __init__(self, name, type, reg, permission=None, version=None, translation_dict=None):
         self.name = name
@@ -18,6 +30,12 @@ class BaseNodeRegistry(object):
             'version': self.version,
 
         }
+
+    def from_yaml(self, path):
+        """ Import from a yaml file.
+        """
+        with open(path) as fp:
+            return yaml.load(fp)
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -38,6 +56,10 @@ class BaseModel(object):
         """ Return the name of the port for the port with provided index.
         """
 
+    def is_status(self, node_index):
+        """ Return if the provided node index point to a static node.
+        """
+
 
 class TestModel(BaseModel):
     def get_node_count(self):  # type: () -> int
@@ -54,7 +76,6 @@ class TestModel(BaseModel):
 
 
 def do_it_motherfucker():
-    import nodz_main
     # Node A
     nodeA = nodz.createNode(name='nodeA', preset='node_preset_1', position=None)
 

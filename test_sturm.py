@@ -2,10 +2,12 @@ import sturm
 
 
 def test_something():
-    class Impl1(sturm.BaseModel):
+    class Impl1(sturm.BaseNode):
         pass
 
-    class Impl2(sturm.BaseModel):
+    class Impl2(sturm.BaseNode):
         pass
 
-    # assert {'BaseModel': sturm.BaseModel, 'Impl1': Impl1, 'Impl2': Impl2} == sturm._REGISTRY
+    actual = sturm._REGISTRY
+    expected = {'BaseNode': sturm.BaseNode, 'Impl1': Impl1, 'Impl2': Impl2}
+    assert actual == expected

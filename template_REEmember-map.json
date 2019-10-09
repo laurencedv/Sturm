@@ -1,0 +1,102 @@
+{
+	"name":		"template_REEreg-Map",
+	"version":	1,
+	"dict":	{
+			"reg":		"r",
+			"default":	"a",
+			"module":	"m",
+			"name":		"n", 
+			"number":	"e",
+			"perm":		"p", 
+			"type":		"t", 
+			"desc":		"d", 
+			"version":	"v",
+			"key":		"k",
+			"bit":		"b",
+			"static":	"c",
+			"time":		"t"
+			},
+	"type": {
+			"bool":		"b",
+			"uint":		"u", 
+			"int":		"i", 
+			"float":	"f", 
+			"struct":	"s"
+			},
+	"reg": [
+		{
+			"name":			"STAT",
+			"type":			"struct",
+			"perm":			"r",
+			"desc":			"Global status",
+			"static":		true,
+			"time":			true,
+			"struct": [
+				{
+					"name":	"VMCUOK",
+					"type":	"b"
+				},
+				{
+					"name":	"REBOOT",
+					"type":	"bool",
+					"perm":	"W"
+				},
+				{
+					"name":	"CODE",
+					"type":	"u",
+					"bit":	3
+				}
+			]
+		},
+		{
+			"name":			"CTL",
+			"type":			"s",
+			"perm":			"rw",
+			"desc":			"Global control"
+		},
+		{
+			"name":			"CMD",
+			"type":			"uint",
+			"bit":			16,
+			"perm":			"w",
+			"desc":			"Command input",
+			"number":		3,
+			"default":		[1, 2, 3]
+		},
+		{
+			"name":			"INFO",
+			"type":			"uint",
+			"bit":			32,
+			"perm":			"rw",
+			"desc":			"Information",
+			"default":		"0x01234567",
+			"static":		true
+		},
+		{
+			"name":			"",
+			"type":			"u",
+			"bit":			32,
+			"perm":			"stoopid",
+			"desc":			"Secret register!",
+			"patate":		"poil"
+		},
+		{
+			"name":			"COMSTAT",
+			"type":			"u",
+			"bit":			8,
+			"perm":			" RRR",
+			"desc":			"Communication status"
+		},
+		{
+			"name":			"FPUINA",
+			"type":			"float",
+			"bit":			"64",
+			"perm":			"W",
+			"desc":			"FPU input A",
+			"default":		0
+		},
+		{
+			"module":		"../inc/REEF_REG.json"
+		}
+	]
+}

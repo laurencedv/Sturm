@@ -15,7 +15,7 @@ class MetaRegistry(type):
 
 
 @six.add_metaclass(MetaRegistry)
-class BaseNodeRegistry(object):
+class BaseNode(object):
     def __init__(self, name, type, reg, permission=None, version=None, translation_dict=None):
         self.name = name
         self.type = type

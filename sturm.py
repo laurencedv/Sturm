@@ -81,7 +81,7 @@ class sturm(QApplication):
             # Then, write the actual db file for next time
             try:
                 filehandler = open(self.dbPath, 'wb')
-                pickle.dump(self.MCUdb, filehandler)
+                pickle.dump(self.MCUdb.getData(), filehandler)
             except Exception as e:
                 # Not supposed to happen, investiguate!
                 raise e
@@ -89,14 +89,13 @@ class sturm(QApplication):
 
         # File found, so we simply load it
         try:
-            print(filehandler)
-            self.MCUdb = pickle.load(filehandler)
+            self.MCUdb.setData(pickle.load(filehandler))
         except Exception:
             os.remove(self.dbPath)
             self.loadMCUdb()    #restart the process, without a file this time
 
         # Validate the content
-        if not self.MCUdb.isValid():
+        if self.MCUdb.isValid() == False:
             #wipe the file and rebuild it
             os.remove(filehandler)
             self.loadMCUdb()    #restart the process, without a file this time

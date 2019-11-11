@@ -9,10 +9,11 @@ class MCUdb(QObject):
         super().__init__()
         self.log = logging.getLogger(__name__)
         self.crawler = MCUcrawler()
+        self.data = []
 
     def populate(self, searchPath):
         self.log.info("Populating MCU db with crawler @%s", searchPath)
-        self.newMCU = self.crawler.search(searchPath)        # Launch crawler against defined search path
+        newMCU = self.crawler.search(searchPath)        # Launch crawler against defined search path
         
         # validate newMCU
 
@@ -22,3 +23,9 @@ class MCUdb(QObject):
         self.log.warning("IMPLEMENT validation of MCUdb")
         return True
 
+    def getData(self):
+        return self.data
+
+    def setData(self, data):
+        if data is not None:
+            self.data = data

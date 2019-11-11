@@ -66,7 +66,7 @@ class sturm(QApplication):
 
         if self.nogui is False:
             self.MainWin.run()
-            self.MCUdbViewer.show()
+            self.MCUdbViewer.run()
 
     def loadMCUdb(self):
         # First try to load previous db

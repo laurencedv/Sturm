@@ -1,0 +1,11 @@
+<RCC>
+  <qresource>
+    <file>media/hwinfo.svg</file>
+    <file>media/opArchive.svg</file>
+    <file>media/opCnC.svg</file>
+    <file>media/opGraph.svg</file>
+    <file>media/opEdit.svg</file>
+    <file>media/opLog.svg</file>
+    <file>media/opView.svg</file>
+  </qresource>
+</RCC>

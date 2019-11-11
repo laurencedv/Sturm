@@ -1,98 +1,111 @@
-import abc
+#!/bin/python3
 
-import six
-import yaml
+#Std stuff
+import sys
+import os
+import logging
+import argparse
+import pickle
 
-_REGISTRY = {}
+#Qt stuff
+from PySide2.QtUiTools import QUiLoader
+from PySide2.QtWidgets import QApplication
+from PySide2.QtCore import Qt, QFile, QCoreApplication
 
+#Project stuff
+from model.MCUdb import MCUdb
+from controller.MainWinCtl import MainWinCtl
+from controller.MCUdbViewerCtl import MCUdbViewerCtl
+from controller.MCUselectorCtl import MCUselectorCtl
+from view.win_main import win_main
+from view.win_MCUdbViewer import win_MCUdbViewer
+from view.diag_MCUselector import diag_MCUselector
+from util.MCUcrawler import MCUcrawler
+from type import *
 
-class MetaRegistry(type):
-    def __new__(meta, name, bases, class_dict):
-        cls = type.__new__(meta, name, bases, class_dict)
-        if name not in _REGISTRY:
-            _REGISTRY[cls.__name__] = cls
-        return cls
+class sturm(QApplication):
+    MCUdb = None
+    argParser = argparse.ArgumentParser()
 
+    def __init__(self, sys_argv):
+        super().__init__(sys_argv)
+        """Logging"""
+        logging.basicConfig(filename="sturm.log",
+                            filemode='w',
+                            format='%(asctime)s,%(msecs)d|%(levelname)s|%(name)s|%(message)s',
+                            datefmt='%H:%M:%S',
+                            level=logging.DEBUG)
+        self.log = logging.getLogger(__name__)
+        self.log.debug('Sturm app launched')
 
-@six.add_metaclass(MetaRegistry)
-class BaseNode(object):
-    def __init__(self, name, type, reg, permission=None, version=None, translation_dict=None):
-        self.name = name
-        self.type = type
-        self.reg = reg
-        self.permission = permission
-        self.version = version or 12
-        self.translation_dict = None
-
-    def to_json(self):
-        return {
-            'name': self.name,
-            'version': self.version,
-
-        }
-
-    def from_yaml(self, path):
-        """ Import from a yaml file.
-        """
-        with open(path) as fp:
-            return yaml.load(fp)
-
-
-@six.add_metaclass(abc.ABCMeta)
-class BaseModel(object):
-    def get_node_count(self):  # type: () -> int
-        """ Return the number of nodes in the graph.
-        """
-
-    def get_node_name(self, node_index):  # type: () -> str
-        """ Return the name of the node with provided index.
-        """
-
-    def get_node_ports_count(self, node_index):
-        """ Return the number of ports for the node with provided index.
-        """
-
-    def get_node_port_name(self, node_index, port_index):
-        """ Return the name of the port for the port with provided index.
-        """
-
-    def is_status(self, node_index):
-        """ Return if the provided node index point to a static node.
-        """
+        """Arguments"""
+        self.argParser.add_argument("--db", help="Specify an MCU db file (IO)", default="./data/mcu.db")
+        self.argParser.add_argument("-s", "--search", help="Specify a search path for mcu detection", default="/opt/Silabs/SimplicityStudio/developer/sdks")
+        self.argParser.add_argument("--nogui", help="Force the app to not initialize the gui", action="store_true")
+        args = self.argParser.parse_args()
+        self.dbPath = args.db
+        self.searchPath = args.search
+        self.nogui = args.nogui
 
 
-class TestModel(BaseModel):
-    def get_node_count(self):  # type: () -> int
-        return 2
+        """Childrens"""
+        self.MCUdb = MCUdb()
 
-    def get_node_name(self, node_index):  # type: () -> str
-        return "foo"
+        if self.nogui is False:
+            self.MainWinCtl = MainWinCtl(model=self.MCUdb)
+            self.MCUdbViewerCtl = MCUdbViewerCtl(model=self.MCUdb)
+            self.MCUselectorCtl = MCUselectorCtl(model=self.MCUdb)
 
-    def get_node_ports_count(self, node_index):
-        return 2
+            self.MainWin = win_main(model=self.MCUdb, controller=self.MainWinCtl)
+            self.MCUdbViewer = win_MCUdbViewer(model=self.MCUdb, controller=self.MCUdbViewerCtl)
+            self.MCUselector = diag_MCUselector(model=self.MCUdb, controller=self.MCUselectorCtl)
+            self.log.debug("Gui object created")
 
-    def get_node_port_name(self, node_index, port_index):
-        return "foo"
+    def run(self):
+        self.loadMCUdb()
 
+        if self.nogui is False:
+            self.MainWin.run()
+            self.MCUdbViewer.show()
 
-def do_it_motherfucker():
-    # Node A
-    nodeA = nodz.createNode(name='nodeA', preset='node_preset_1', position=None)
+    def loadMCUdb(self):
+        # First try to load previous db
+        try:
+            filehandler = open(self.dbPath, 'rb')
+            self.log.debug("MCU db file:%s", filehandler)
+        except FileNotFoundError:
+            # File not found, so create it
+            self.log.info("MCU db not found at %s", self.dbPath)
+            self.MCUdb.populate(self.searchPath)
+            
+            # Then, write the actual db file for next time
+            try:
+                filehandler = open(self.dbPath, 'wb')
+                pickle.dump(self.MCUdb, filehandler)
+            except Exception as e:
+                # Not supposed to happen, investiguate!
+                raise e
+            return
 
-    nodz.createAttribute(node=nodeA, name='Aattr1', index=-1, preset='attr_preset_1',
-                         plug=True, socket=False, dataType=str)
+        # File found, so we simply load it
+        try:
+            print(filehandler)
+            self.MCUdb = pickle.load(filehandler)
+        except Exception:
+            os.remove(self.dbPath)
+            self.loadMCUdb()    #restart the process, without a file this time
 
-    nodz.createAttribute(node=nodeA, name='Aattr2', index=-1, preset='attr_preset_1',
-                         plug=False, socket=False, dataType=int)
+        # Validate the content
+        if not self.MCUdb.isValid():
+            #wipe the file and rebuild it
+            os.remove(filehandler)
+            self.loadMCUdb()    #restart the process, without a file this time
 
-    nodz.createAttribute(node=nodeA, name='Aattr3', index=-1, preset='attr_preset_2',
-                         plug=True, socket=True, dataType=int)
+        self.log.debug("Using MCU db: %s", self.dbPath)
+        
 
-    nodz.createAttribute(node=nodeA, name='Aattr4', index=-1, preset='attr_preset_2',
-                         plug=True, socket=True, dataType=str)
-
-    nodz.createAttribute(node=nodeA, name='Aattr5', index=-1, preset='attr_preset_3',
-                         plug=True, socket=True, dataType=int, plugMaxConnections=1, socketMaxConnections=-1)
-
-    nodz.createAttribute(node=nodeA, name='Aattr6', index=-1, preset='attr_preset_3',
-                         plug=True, socket=True, dataType=int, plugMaxConnections=1, socketMaxConnections=-1)
+if __name__ == "__main__":
+    QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)    #Shush the warning!
+    inst = sturm(sys.argv)
+    inst.run()
+    sys.exit(inst.exec_())

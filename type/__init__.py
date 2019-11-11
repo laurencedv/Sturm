@@ -1,0 +1,1 @@
+__all__=["MCU", "EFM32", "EFM8", "EFM32GG11", "EFM32GG12", "EFM32TG11"]

@@ -1,6 +1,0 @@
-23:50:17,339|DEBUG|__main__|Sturm app launched
-23:50:17,363|DEBUG|__main__|Gui object created
-23:50:17,363|DEBUG|__main__|MCU db file:<_io.BufferedReader name='./data/mcu.db'>
-23:50:17,363|WARNING|model.MCUdb|IMPLEMENT validation of MCUdb
-23:50:17,363|DEBUG|__main__|Using MCU db: ./data/mcu.db
-23:50:17,366|DEBUG|view.win_main|Main window setup

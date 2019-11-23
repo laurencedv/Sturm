@@ -179,3 +179,5 @@ _site/
 hw/fp-info-cache
 
 *.sch-bak
+
+sturm.log

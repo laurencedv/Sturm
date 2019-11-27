@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/python3
 import logging
 from PySide2.QtCore import QObject
 from util.MCUcrawler import MCUcrawler

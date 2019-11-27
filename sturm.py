@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/python3
 
 #Std stuff
 import sys
@@ -29,6 +29,25 @@ class sturm(QApplication):
 
     def __init__(self, sys_argv):
         super().__init__(sys_argv)
+
+        """Arguments"""
+        self.argParser.add_argument("--db", help="Specify an MCU db file (IO)", default="./data/mcu.db")
+        self.argParser.add_argument("-s", "--search", help="Specify a search path for mcu detection", default="/opt/Silabs/SimplicityStudio/developer/sdks")
+        self.argParser.add_argument("--nogui", help="Force the app to not initialize the gui", action="store_true")
+        self.argParser.add_argument("-v", "--verbosity", help="Adjust verbosity level of console", type=str, choices=["DEBUG","INFO","WARNING","ERROR"], default="ERROR")
+        args = self.argParser.parse_args()
+        self.dbPath = args.db
+        self.searchPath = args.search
+        self.nogui = args.nogui
+        if args.verbosity == "DEBUG":
+            consoleVerbosity = logging.DEBUG
+        elif args.verbosity == "INFO":
+            consoleVerbosity = logging.INFO
+        elif args.verbosity == "WARNING":
+            consoleVerbosity = logging.WARNING
+        else:
+            consoleVerbosity = logging.ERROR
+
         """Logging"""
         logging.basicConfig(filename="sturm.log",
                             filemode='w',
@@ -36,17 +55,13 @@ class sturm(QApplication):
                             datefmt='%H:%M:%S',
                             level=logging.DEBUG)
         self.log = logging.getLogger(__name__)
+        console = logging.StreamHandler()
+        formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+        console.setLevel(consoleVerbosity)
+        console.setFormatter(formatter)
+        self.log.addHandler(console)
+        self.log.info("Console verbosity set to {}".format(args.verbosity))
         self.log.debug('Sturm app launched')
-
-        """Arguments"""
-        self.argParser.add_argument("--db", help="Specify an MCU db file (IO)", default="./data/mcu.db")
-        self.argParser.add_argument("-s", "--search", help="Specify a search path for mcu detection", default="/opt/Silabs/SimplicityStudio/developer/sdks")
-        self.argParser.add_argument("--nogui", help="Force the app to not initialize the gui", action="store_true")
-        args = self.argParser.parse_args()
-        self.dbPath = args.db
-        self.searchPath = args.search
-        self.nogui = args.nogui
-
 
         """Childrens"""
         self.MCUdb = MCUdb()
